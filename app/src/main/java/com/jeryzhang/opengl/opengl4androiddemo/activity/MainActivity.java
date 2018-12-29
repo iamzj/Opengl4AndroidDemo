@@ -10,6 +10,7 @@ import com.jeryzhang.opengl.opengl4androiddemo.ndk.NativeSimpleRenderer;
 import com.jeryzhang.opengl.opengl4androiddemo.render.ColorRender;
 import com.jeryzhang.opengl.opengl4androiddemo.render.RectangleRenderer;
 import com.jeryzhang.opengl.opengl4androiddemo.render.SimpleRenderer;
+import com.jeryzhang.opengl.opengl4androiddemo.render.UniformRenderer;
 
 public class MainActivity extends AppCompatActivity {
     private GLSurfaceView mGLSurfaceView;
@@ -25,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
 //        mGLSurfaceView.setRenderer(new NativeColorRenderer(Color.GRAY));
 //        mGLSurfaceView.setRenderer(new SimpleRenderer());
 //        mGLSurfaceView.setRenderer(new NativeSimpleRenderer());
-
-        mGLSurfaceView.setRenderer(new RectangleRenderer());
+//        mGLSurfaceView.setRenderer(new RectangleRenderer());
+        mGLSurfaceView.setRenderer(new UniformRenderer(this));
 
     }
 
