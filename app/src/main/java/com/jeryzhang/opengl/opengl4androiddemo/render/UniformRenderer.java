@@ -31,7 +31,7 @@ public class UniformRenderer implements GLSurfaceView.Renderer {
         //编译
         final int vertexShaderId = ShaderUtils.compileVertexShader(ResReadUtils.readResource(mContext,R.raw.vertex_uniform_shader));
         final int fragmentShaderId = ShaderUtils.compileFragmentShader(ResReadUtils.readResource(mContext,R.raw.fragment_uniform_shader));
-        //鏈接程序片段
+        //链接程序片段
         mProgram = ShaderUtils.linkProgram(vertexShaderId, fragmentShaderId);
         //在OpenGLES环境中使用程序片段
         GLES30.glUseProgram(mProgram);

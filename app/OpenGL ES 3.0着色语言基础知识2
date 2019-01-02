@@ -1,1 +1,58 @@
 一、统一变量和属性
+统一变量(uniform)是存储应用程序通过OpenGL ES 3.0 API传递给着色器的只读常数值的变量。
+统一变量被组合成两类统一变量块。
+第一类是命名统一变量块，统一变量的值由所谓的统一变量缓冲区对象支持，命名统一变量块被分配一个统一变量块索引。
+uniform TransformBlock {
+    mat4 matViewProj;
+    mat3 matNormal;
+    mat3 matTexGen;
+};
+
+第二类是默认的统一变量块，用于在命名统一变量块之外声明的统一变量。和命名统一变量块不同，默认统一变量块没有名称或者统一变量块索引。
+uniform mat4 matViewProj;
+uniform mat3 matNormal;
+uniform mat3 matTexGen;
+
+获取和设置统一变量
+1、査询程序中活动统一变量的列表-glGetProgramiv
+   用GL_ACTIVE_UNIFORMS参数，调用glGetProgramiv，获得程序中活动统一变量的数量。
+   用GL_ACTIVE_UNIFORM_MAX_LENGTHS参数，调用glGetProgramiv，获得程序中活动统一变量的最大长度。
+   这个列表包含命名统一变量块中的统一变量、着色器代码中声明的默认统一变量块中的统一变量以及着色器代码中使用的内建统一变量。
+   如果统一变量被程序使用，就认为它是"活动"的。如果你在一个着色器中声明了一个统一变量但是从未使用，链接程序可能会在优化时将其去掉，不在活动统一变量列表中返回。
+
+
+2、用glGetActiveUniform和glGetActiveUniformsiv找出每个统一变量的细节。
+   使用glGetActiveUniform，可以确定几乎所有统一变量的属性。你可以确定统一变量的名称和类型。此外，可以发现变量是不是数组以及数组中使用的最大元素。
+   统一变量的名称 对于找到统一变量的位置是必要的，要知道如何加载统一变量的数据，需要统一变量的类型和大小。
+   一旦有了统一变量的名称，就可以用glGetUniformLocation找到它的位置。统一变量的位置是一个整数值，用于标识统一变量在程序中的位置(注意: 命名统一变量块中的统一变量没有指定位置)。
+   这个位置值用于加载统一变量值的后续调用。
+   public static native int glGetUniformLocation(
+           int program,
+           String name
+   );
+
+3、加载统一变量值
+   glGetUniformLocation将返回由name指定的统一变量的位置。如果这个统一变量不是程序中的活动统一变量，返回值将为-1。有了统一变量的位置及其类型和数组大小，
+   我们就可以加载统一变量的值。加载统一变量值有许多不同的函数，每种统一变量类型都对应不同的函数。
+   public static native void glUniform1f(int location,float x);
+   public static native void glUniform1fv(int location,int count,float[] v,int offset);
+   加载统一变量所需的函数根据glGetActiveUniform函数返回的type确定。例如，如果返回的类型是GL_FLOAT_VEC4,
+   那么可以使用glUniform4f或glUnifomi4fv。如果gIGetActiveUniform返回的size大于 1, 则使用glUnifrom4fv在一次调用中加载整个数组。
+   如果统一变量不是数组，则可以使用glUniform4f或glUniform4fv
+   注意: glUniform*调用不以程序对象句柄作为参数。原因是: glUniform*总是在与glUseProgram绑定的当前程序上操作。
+   统一变量值本身保存在程序对象中。也就是说，一旦在程序对象中设置一个统一变量的值，即使你让另一个程序处于活动状态，该值仍然保留在原来的程序对象中。
+   从这个意义上，我们可以说统一变量值是程序对象局部所有的。
+
+
+统一变量块声明中的变量在着色器中都可以访问，就像常规形式声明的变量一样。
+#version 300 es
+uniform TransformBlock {
+    mat4 matViewProj;
+    mat3 matNormal;
+    mat3 matTexGen;
+};
+layout(location = 0) in vec4 a_position;
+void main{
+     gl_Position = matViewProj * a_position;
+}
+
